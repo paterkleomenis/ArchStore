@@ -15,10 +15,6 @@ A beautiful, modern desktop application for managing packages on Arch Linux. Bui
 - ⚡ **Fast & Native** - Built with Tauri for minimal resource usage
 - 🔐 **Secure Password Handling** - Custom password prompt for privileged operations
 
-## Screenshots
-
-Browse popular applications organized by category, search across all package sources, and manage installations with real-time progress tracking.
-
 ## Installation
 
 ### Prerequisites
