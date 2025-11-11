@@ -135,47 +135,12 @@ archstore-native/
 └── vite.config.js
 ```
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development Guidelines
-
-1. Keep the UI responsive and user-friendly
-2. Test with different package sources (official, AUR, Flatpak)
-3. Ensure password handling remains secure
-4. Follow Rust and JavaScript best practices
-
-## Known Issues
-
-- AUR packages with very long build times (>15 min) may require sudo password re-entry
-  - Workaround: Increase sudo timeout in `/etc/sudoers`
-- Some Flatpak package names use reverse domain notation (e.g., `org.mozilla.firefox`)
-
-## Roadmap
-
-- [ ] Package screenshots and additional metadata
-- [ ] Download progress indicators
-- [ ] Dependency visualization
-- [ ] Package favorites/bookmarks
-- [ ] Installation queue for batch operations
-- [ ] Search history and suggestions
-- [ ] Selective updates (choose which packages to update)
-
 ## License
 
 MIT License - see LICENSE file for details
-
-## Acknowledgments
-
-- Built with [Tauri](https://tauri.app/)
-- Icons from [Wikimedia Commons](https://commons.wikimedia.org/) and official project websites
-- Inspired by various package manager GUIs in the Linux ecosystem
 
 ## Support
 
 For issues, questions, or suggestions, please open an issue on GitHub.
 
 ---
-
-**Note**: This is an independent project and is not officially affiliated with Arch Linux.
