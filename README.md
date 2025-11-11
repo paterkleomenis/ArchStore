@@ -29,7 +29,7 @@ A beautiful, modern desktop application for managing packages on Arch Linux. Bui
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/archstore.git
+git clone https://github.com/paterkleomenis/archstore.git
 cd archstore/archstore-native
 ```
 
