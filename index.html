@@ -1,0 +1,1816 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ArchStore</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --bg-primary: #0f0f0f;
+                --bg-secondary: #1a1a1a;
+                --bg-tertiary: #242424;
+                --accent: #0ea5e9;
+                --accent-hover: #38bdf8;
+                --text-primary: #fafafa;
+                --text-secondary: #a1a1a1;
+                --border: #333;
+                --success: #10b981;
+                --error: #ef4444;
+                --warning: #f59e0b;
+            }
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Oxygen, Ubuntu, Cantarell, sans-serif;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.6;
+                overflow-x: hidden;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+
+            /* Header */
+            header {
+                background: var(--bg-secondary);
+                border-bottom: 1px solid var(--border);
+                padding: 16px 0;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                backdrop-filter: blur(10px);
+            }
+
+            .header-content {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 24px;
+            }
+
+            .logo {
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--text-primary);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: all 0.2s;
+            }
+
+            .logo:hover {
+                opacity: 0.8;
+            }
+
+            .logo img {
+                flex-shrink: 0;
+            }
+
+            .search-container {
+                flex: 1;
+                max-width: 600px;
+                position: relative;
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .search-input {
+                flex: 1;
+                padding: 10px 16px;
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text-primary);
+                font-size: 14px;
+                transition: all 0.2s;
+            }
+
+            .search-input:focus {
+                outline: none;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            }
+
+            .filter-sort-btn {
+                padding: 10px 16px;
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text-primary);
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                white-space: nowrap;
+            }
+
+            .filter-sort-btn:hover {
+                background: var(--bg-secondary);
+                border-color: var(--accent);
+            }
+
+            .filter-sort-btn.active {
+                background: var(--accent);
+                border-color: var(--accent);
+                color: white;
+            }
+
+            .filter-sort-dropdown {
+                position: absolute;
+                top: calc(100% + 8px);
+                right: 0;
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 8px;
+                min-width: 200px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+                display: none;
+            }
+
+            .filter-sort-dropdown.active {
+                display: block;
+                animation: dropdownSlideIn 0.2s ease-out;
+            }
+
+            @keyframes dropdownSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .dropdown-section {
+                margin-bottom: 12px;
+            }
+
+            .dropdown-section:last-child {
+                margin-bottom: 0;
+            }
+
+            .dropdown-label {
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--text-secondary);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 6px;
+                padding: 0 8px;
+            }
+
+            .dropdown-option {
+                padding: 8px 12px;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 14px;
+            }
+
+            .dropdown-option:hover {
+                background: var(--bg-tertiary);
+            }
+
+            .dropdown-option.selected {
+                background: var(--accent);
+                color: white;
+            }
+
+            .dropdown-option .checkmark {
+                opacity: 0;
+            }
+
+            .dropdown-option.selected .checkmark {
+                opacity: 1;
+            }
+
+            .search-results-header {
+                padding: 16px 0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 16px;
+            }
+
+            .results-count {
+                font-size: 14px;
+                color: var(--text-secondary);
+            }
+
+            .results-count strong {
+                color: var(--text-primary);
+                font-weight: 600;
+            }
+
+            .skeleton-card {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 20px;
+                animation: skeleton-pulse 1.5s ease-in-out infinite;
+            }
+
+            @keyframes skeleton-pulse {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.5;
+                }
+            }
+
+            .skeleton-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 12px;
+            }
+
+            .skeleton-name {
+                height: 20px;
+                width: 150px;
+                background: var(--bg-tertiary);
+                border-radius: 4px;
+            }
+
+            .skeleton-badge {
+                height: 20px;
+                width: 60px;
+                background: var(--bg-tertiary);
+                border-radius: 4px;
+            }
+
+            .skeleton-desc {
+                height: 16px;
+                width: 100%;
+                background: var(--bg-tertiary);
+                border-radius: 4px;
+                margin-bottom: 12px;
+            }
+
+            .skeleton-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .skeleton-version {
+                height: 14px;
+                width: 80px;
+                background: var(--bg-tertiary);
+                border-radius: 4px;
+            }
+
+            .skeleton-button {
+                height: 36px;
+                width: 100px;
+                background: var(--bg-tertiary);
+                border-radius: 6px;
+            }
+
+            .filter-tabs {
+                display: flex;
+                gap: 8px;
+            }
+
+            .tab-btn {
+                padding: 8px 16px;
+                background: transparent;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                color: var(--text-secondary);
+                font-size: 13px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .tab-btn:hover {
+                border-color: var(--accent);
+                color: var(--text-primary);
+            }
+
+            .tab-btn.active {
+                background: var(--accent);
+                border-color: var(--accent);
+                color: white;
+            }
+
+            /* Main Content */
+            main {
+                padding: 32px 0;
+                min-height: calc(100vh - 200px);
+            }
+
+            .packages-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 16px;
+                margin-top: 24px;
+            }
+
+            .package-card {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 20px;
+                transition: all 0.2s;
+            }
+
+            .package-card.clickable-card {
+                cursor: pointer;
+            }
+
+            .package-card:hover {
+                border-color: var(--accent);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
+            }
+
+            .package-card:active {
+                transform: translateY(-1px);
+            }
+
+            .package-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+                margin-bottom: 12px;
+            }
+
+            .package-name {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 4px;
+            }
+
+            .package-source {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+
+            .source-aur {
+                background: rgba(139, 92, 246, 0.2);
+                color: #a78bfa;
+            }
+
+            .source-flatpak {
+                background: rgba(59, 130, 246, 0.2);
+                color: #60a5fa;
+            }
+
+            .source-official {
+                background: rgba(16, 185, 129, 0.2);
+                color: #34d399;
+            }
+
+            .source-multiple {
+                background: rgba(168, 85, 247, 0.2);
+                color: #c084fc;
+            }
+
+            .package-description {
+                color: var(--text-secondary);
+                font-size: 13px;
+                margin-bottom: 16px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .package-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .package-version {
+                font-size: 12px;
+                color: var(--text-secondary);
+            }
+
+            .install-btn {
+                padding: 8px 16px;
+                background: var(--accent);
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .install-btn:hover {
+                background: var(--accent-hover);
+            }
+
+            .install-btn:active {
+                transform: scale(0.95);
+            }
+
+            .install-btn:disabled {
+                background: var(--success);
+                cursor: not-allowed;
+                opacity: 0.7;
+            }
+
+            .view-details-btn {
+                padding: 8px 16px;
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                color: var(--text-primary);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .view-details-btn:hover {
+                background: var(--bg-primary);
+            }
+
+            .view-details-btn:active {
+                transform: scale(0.95);
+            }
+
+            .package-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+            .quick-install-btn {
+                flex: 1;
+                padding: 8px 16px;
+                background: var(--accent);
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .quick-install-btn:hover {
+                background: var(--accent-hover);
+            }
+
+            .quick-install-btn:active {
+                transform: scale(0.95);
+            }
+
+            .quick-install-btn:disabled {
+                background: var(--success);
+                cursor: not-allowed;
+                opacity: 0.7;
+            }
+
+            /* Loading State */
+            .loading {
+                text-align: center;
+                padding: 60px 20px;
+                color: var(--text-secondary);
+            }
+
+            .spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid var(--border);
+                border-top-color: var(--accent);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 16px;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .spinner-small {
+                width: 16px;
+                height: 16px;
+                border: 2px solid var(--border);
+                border-top-color: var(--accent);
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+                margin-right: 8px;
+            }
+
+            /* Search Status Bar */
+            .search-status-bar {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 12px 16px;
+                margin-bottom: 16px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .search-status-content {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--text-secondary);
+                font-size: 14px;
+            }
+
+            /* Modal */
+            .modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(4px);
+                z-index: 1000;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal.active {
+                display: flex;
+            }
+
+            .modal-content {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                width: 90%;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .modal-header {
+                padding: 20px;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .modal-title {
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .close-btn {
+                background: transparent;
+                border: none;
+                color: var(--text-secondary);
+                font-size: 24px;
+                cursor: pointer;
+                padding: 0;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+                transition: all 0.2s;
+            }
+
+            .close-btn:hover {
+                background: var(--bg-tertiary);
+                color: var(--text-primary);
+            }
+
+            .modal-body {
+                padding: 20px;
+                flex: 1;
+                overflow-y: auto;
+            }
+
+            .progress-bar {
+                width: 100%;
+                height: 8px;
+                background: var(--bg-tertiary);
+                border-radius: 4px;
+                overflow: hidden;
+                margin-bottom: 16px;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    var(--accent),
+                    var(--accent-hover)
+                );
+                width: 0%;
+                transition: width 0.3s;
+            }
+
+            .terminal {
+                background: #000;
+                border-radius: 8px;
+                padding: 16px;
+                font-family: "Courier New", monospace;
+                font-size: 12px;
+                color: #0f0;
+                height: 300px;
+                overflow-y: auto;
+                line-height: 1.4;
+            }
+
+            .terminal-line {
+                margin-bottom: 4px;
+            }
+
+            /* Empty State */
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: var(--text-secondary);
+            }
+
+            .empty-state h3 {
+                font-size: 18px;
+                margin-bottom: 8px;
+                color: var(--text-primary);
+            }
+
+            /* Home Screen */
+            .home-screen {
+                animation: fadeIn 0.3s ease-in;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .home-screen {
+                padding: 20px 0;
+            }
+
+            .home-header {
+                text-align: center;
+                margin-bottom: 24px;
+            }
+
+            .home-header h1 {
+                font-size: 24px;
+                font-weight: 700;
+                margin: 0 0 8px 0;
+                background: linear-gradient(
+                    135deg,
+                    var(--accent),
+                    var(--accent-hover)
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .home-header p {
+                font-size: 14px;
+                color: var(--text-secondary);
+            }
+
+            .category-tabs {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 20px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid var(--border);
+                overflow-x: auto;
+                scrollbar-width: thin;
+            }
+
+            .category-tab {
+                padding: 8px 16px;
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                color: var(--text-primary);
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .category-tab:hover {
+                background: var(--bg-secondary);
+                border-color: var(--accent);
+            }
+
+            .category-tab.active {
+                background: var(--accent);
+                border-color: var(--accent);
+                color: white;
+            }
+
+            .category-section {
+                margin-bottom: 32px;
+            }
+
+            .category-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 16px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .category-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+
+            .category-count {
+                font-size: 12px;
+                color: var(--text-secondary);
+                background: var(--bg-tertiary);
+                padding: 4px 12px;
+                border-radius: 12px;
+            }
+
+            .popular-apps-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 16px;
+            }
+
+            .popular-app-card {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 16px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+
+            .popular-app-card:hover {
+                border-color: var(--accent);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+            }
+
+            .app-icon {
+                font-size: 32px;
+                width: 48px;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--bg-tertiary);
+                border-radius: 8px;
+                flex-shrink: 0;
+                overflow: hidden;
+            }
+
+            .app-icon img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                padding: 4px;
+            }
+
+            .app-icon-loading {
+                background: var(--bg-tertiary);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .app-icon-loading::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.1),
+                    transparent
+                );
+                animation: shimmer 1.5s infinite;
+            }
+
+            @keyframes shimmer {
+                to {
+                    left: 100%;
+                }
+            }
+
+            .app-icon-placeholder {
+                background: linear-gradient(
+                    135deg,
+                    var(--bg-tertiary),
+                    var(--border)
+                );
+                position: relative;
+            }
+
+            .app-icon-placeholder::after {
+                content: "?";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 24px;
+                color: var(--text-secondary);
+                opacity: 0.3;
+            }
+
+            .app-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .app-name {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .app-description {
+                font-size: 12px;
+                color: var(--text-secondary);
+                margin-bottom: 6px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                line-height: 1.4;
+            }
+
+            .app-source {
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 10px;
+                font-weight: 600;
+                text-transform: uppercase;
+                display: inline-block;
+            }
+
+            .app-install-btn {
+                padding: 8px 16px;
+                background: var(--accent);
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                white-space: nowrap;
+            }
+
+            .app-install-btn:hover {
+                background: var(--accent-hover);
+                transform: scale(1.05);
+            }
+
+            .app-view-btn {
+                padding: 10px 20px;
+                background: var(--accent);
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                white-space: nowrap;
+            }
+
+            .app-view-btn:hover {
+                background: var(--accent-hover);
+                transform: scale(1.05);
+            }
+
+            .app-view-btn:active {
+                transform: scale(0.98);
+            }
+
+            .app-sources {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-top: 8px;
+            }
+
+            .source-badge {
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-size: 10px;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+
+            /* App Detail View */
+            .app-detail-view {
+                animation: fadeIn 0.3s ease-in;
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+            .app-detail-actions {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+
+            .back-btn,
+            .refresh-btn {
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                color: var(--text-primary);
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .back-btn:hover,
+            .refresh-btn:hover {
+                background: var(--bg-secondary);
+                border-color: var(--accent);
+            }
+
+            .refresh-btn {
+                background: var(--bg-secondary);
+            }
+
+            .refresh-btn:hover {
+                background: var(--accent);
+                color: var(--bg-primary);
+            }
+
+            .app-detail-header {
+                display: flex;
+                gap: 24px;
+                align-items: start;
+                margin-bottom: 40px;
+                padding: 24px;
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+            }
+
+            .app-detail-icon {
+                width: 128px;
+                height: 128px;
+                flex-shrink: 0;
+                background: var(--bg-tertiary);
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+
+            .app-detail-icon img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                padding: 8px;
+            }
+
+            .app-detail-info {
+                flex: 1;
+            }
+
+            .app-detail-name {
+                font-size: 32px;
+                font-weight: 700;
+                margin-bottom: 12px;
+                color: var(--text-primary);
+            }
+
+            .app-detail-description {
+                font-size: 16px;
+                color: var(--text-secondary);
+                line-height: 1.6;
+            }
+
+            .app-detail-sources {
+                padding: 24px;
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+            }
+
+            .app-detail-sources h2 {
+                font-size: 20px;
+                margin-bottom: 8px;
+                color: var(--text-primary);
+            }
+
+            .sources-hint {
+                color: var(--text-secondary);
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+
+            .sources-grid {
+                display: grid;
+                gap: 16px;
+            }
+
+            .source-option {
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 20px;
+                transition: all 0.2s;
+            }
+
+            .source-option:hover {
+                border-color: var(--accent);
+            }
+
+            .source-option-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+            }
+
+            .source-badge-large {
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+
+            .source-version {
+                color: var(--text-secondary);
+                font-size: 14px;
+                font-family: monospace;
+            }
+
+            .source-option-details {
+                margin-bottom: 16px;
+            }
+
+            .source-package-name {
+                color: var(--text-secondary);
+                font-size: 13px;
+                font-family: monospace;
+                margin-bottom: 8px;
+            }
+
+            .installed-badge {
+                display: inline-block;
+                padding: 4px 10px;
+                background: var(--success);
+                color: white;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+
+            .source-option-buttons {
+                display: flex;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .install-from-source-btn {
+                flex: 1;
+                padding: 12px;
+                background: var(--accent);
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .install-from-source-btn:hover {
+                background: var(--accent-hover);
+            }
+
+            .install-from-source-btn:disabled {
+                background: var(--success);
+                cursor: not-allowed;
+                opacity: 0.7;
+            }
+
+            .remove-from-source-btn {
+                padding: 12px 20px;
+                background: #dc3545;
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .remove-from-source-btn:hover {
+                background: #c82333;
+            }
+
+            /* Remove Options Modal */
+            .remove-options-modal-content {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                width: 90%;
+                max-width: 520px;
+                padding: 0;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+                animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+
+            @keyframes modalSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            .remove-modal-header {
+                padding: 24px 28px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .remove-modal-header h2 {
+                margin: 0;
+                font-size: 20px;
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+
+            .remove-modal-subtitle {
+                margin: 8px 0 0 0;
+                font-size: 14px;
+                color: var(--text-secondary);
+            }
+
+            .remove-options-container {
+                padding: 20px 28px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .remove-option-btn {
+                padding: 16px 18px;
+                text-align: left;
+                border: 2px solid var(--border);
+                border-radius: 10px;
+                background: var(--bg-primary);
+                cursor: pointer;
+                transition: all 0.2s;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .remove-option-btn:hover {
+                border-color: var(--accent);
+                background: var(--bg-tertiary);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+            }
+
+            .remove-option-btn:active {
+                transform: translateY(0);
+            }
+
+            .remove-option-title {
+                font-weight: 600;
+                font-size: 15px;
+                margin-bottom: 6px;
+                color: var(--text-primary);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .remove-option-desc {
+                font-size: 13px;
+                color: var(--text-secondary);
+                line-height: 1.4;
+            }
+
+            .remove-option-badge {
+                display: inline-block;
+                padding: 2px 8px;
+                background: var(--success);
+                color: white;
+                font-size: 11px;
+                border-radius: 4px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+
+            .remove-modal-footer {
+                padding: 16px 28px 24px 28px;
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+            }
+
+            .cancel-remove-btn {
+                padding: 10px 24px;
+                background: var(--bg-tertiary);
+                color: var(--text-primary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+
+            .cancel-remove-btn:hover {
+                background: var(--bg-primary);
+                border-color: var(--text-secondary);
+            }
+
+            .remove-icon {
+                display: inline-block;
+                font-size: 18px;
+                opacity: 0.8;
+            }
+
+            .remove-option-desc code {
+                background: var(--bg-tertiary);
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-family: "Courier New", monospace;
+                font-size: 12px;
+                color: var(--accent);
+                border: 1px solid var(--border);
+            }
+
+            /* Update Badge */
+            .update-badge {
+                position: absolute;
+                top: -4px;
+                right: -4px;
+                background: var(--error);
+                color: white;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+                text-align: center;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                animation: badge-pulse 2s ease-in-out infinite;
+            }
+
+            @keyframes badge-pulse {
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <img
+                            src="arch-icon.png"
+                            alt="Arch Linux"
+                            style="height: 32px; width: 32px"
+                        />
+                        ArchStore
+                    </div>
+                    <div class="search-container">
+                        <input
+                            type="text"
+                            class="search-input"
+                            id="search-input"
+                            placeholder="Search packages..."
+                            autocomplete="off"
+                        />
+                        <div style="position: relative">
+                            <button class="filter-sort-btn" id="filter-btn">
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <line x1="4" y1="6" x2="20" y2="6" />
+                                    <line x1="4" y1="12" x2="16" y2="12" />
+                                    <line x1="4" y1="18" x2="12" y2="18" />
+                                </svg>
+                                Filter
+                            </button>
+                            <div
+                                class="filter-sort-dropdown"
+                                id="filter-dropdown"
+                            >
+                                <div class="dropdown-section">
+                                    <div class="dropdown-label">
+                                        Install Status
+                                    </div>
+                                    <div
+                                        class="dropdown-option"
+                                        data-filter="all"
+                                    >
+                                        <span>All Packages</span>
+                                        <span class="checkmark">✓</span>
+                                    </div>
+                                    <div
+                                        class="dropdown-option"
+                                        data-filter="installed"
+                                    >
+                                        <span>Installed Only</span>
+                                        <span class="checkmark">✓</span>
+                                    </div>
+                                    <div
+                                        class="dropdown-option"
+                                        data-filter="not-installed"
+                                    >
+                                        <span>Not Installed</span>
+                                        <span class="checkmark">✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="position: relative">
+                            <button class="filter-sort-btn" id="sort-btn">
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M11 5h10" />
+                                    <path d="M11 9h7" />
+                                    <path d="M11 13h4" />
+                                    <line x1="4" y1="5" x2="4" y2="19" />
+                                    <polyline points="7 15 4 19 1 15" />
+                                </svg>
+                                Sort
+                            </button>
+                            <div
+                                class="filter-sort-dropdown"
+                                id="sort-dropdown"
+                            >
+                                <div class="dropdown-section">
+                                    <div class="dropdown-label">Sort By</div>
+                                    <div
+                                        class="dropdown-option selected"
+                                        data-sort="relevance"
+                                    >
+                                        <span>Relevance</span>
+                                        <span class="checkmark">✓</span>
+                                    </div>
+                                    <div
+                                        class="dropdown-option"
+                                        data-sort="name"
+                                    >
+                                        <span>Name (A-Z)</span>
+                                        <span class="checkmark">✓</span>
+                                    </div>
+                                    <div
+                                        class="dropdown-option"
+                                        data-sort="name-desc"
+                                    >
+                                        <span>Name (Z-A)</span>
+                                        <span class="checkmark">✓</span>
+                                    </div>
+                                    <div
+                                        class="dropdown-option"
+                                        data-sort="source"
+                                    >
+                                        <span>Source</span>
+                                        <span class="checkmark">✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-tabs">
+                        <button class="tab-btn active" data-source="all">
+                            All
+                        </button>
+                        <button class="tab-btn" data-source="official">
+                            Official
+                        </button>
+                        <button class="tab-btn" data-source="aur">AUR</button>
+                        <button class="tab-btn" data-source="flatpak">
+                            Flatpak
+                        </button>
+                    </div>
+                    <button
+                        id="settings-btn"
+                        style="
+                            background: transparent;
+                            border: none;
+                            padding: 8px;
+                            cursor: pointer;
+                            color: var(--text-secondary);
+                            transition: color 0.2s;
+                        "
+                        onmouseover="this.style.color='var(--text-primary)'"
+                        onmouseout="this.style.color='var(--text-secondary)'"
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path
+                                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                            ></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="container">
+                <div id="packages-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading packages...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="modal" id="install-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        Installing <span id="modal-package-name"></span>
+                    </h2>
+                    <button class="close-btn" id="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="terminal" id="terminal-output">
+                        <div class="terminal-line">
+                            Initializing installation...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="update-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Updating System</h2>
+                    <button class="close-btn" id="close-update-modal">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="progress-bar">
+                        <div
+                            class="progress-fill"
+                            id="update-progress-fill"
+                        ></div>
+                    </div>
+                    <div class="terminal" id="update-terminal-output">
+                        <div class="terminal-line">
+                            Initializing system update...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="settings-modal">
+            <div class="modal-content" style="max-width: 500px">
+                <div class="modal-header">
+                    <h2 class="modal-title">Settings</h2>
+                    <button class="close-btn" id="close-settings-modal">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h3
+                        style="
+                            font-size: 14px;
+                            font-weight: 600;
+                            margin-bottom: 16px;
+                            color: var(--text-primary);
+                        "
+                    >
+                        System Updates
+                    </h3>
+
+                    <div style="margin-bottom: 24px">
+                        <button
+                            id="check-updates-btn"
+                            style="
+                                width: 100%;
+                                padding: 12px;
+                                background: var(--accent);
+                                border: none;
+                                border-radius: 8px;
+                                color: white;
+                                font-size: 14px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                            "
+                        >
+                            Check for Updates
+                        </button>
+                        <div
+                            id="updates-list"
+                            style="margin-top: 12px; display: none"
+                        >
+                            <div
+                                style="
+                                    font-size: 13px;
+                                    color: var(--text-secondary);
+                                    margin-bottom: 8px;
+                                "
+                            >
+                                <span id="updates-count">0</span> updates
+                                available
+                            </div>
+                            <div
+                                id="updates-container"
+                                style="
+                                    max-height: 200px;
+                                    overflow-y: auto;
+                                    background: var(--bg-tertiary);
+                                    border-radius: 8px;
+                                    padding: 8px;
+                                "
+                            ></div>
+                            <button
+                                id="update-all-btn"
+                                style="
+                                    width: 100%;
+                                    padding: 10px;
+                                    background: var(--success);
+                                    border: none;
+                                    border-radius: 6px;
+                                    color: white;
+                                    font-size: 13px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    margin-top: 8px;
+                                "
+                            >
+                                Update All Packages
+                            </button>
+                        </div>
+                    </div>
+
+                    <h3
+                        style="
+                            font-size: 14px;
+                            font-weight: 600;
+                            margin-bottom: 16px;
+                            color: var(--text-primary);
+                        "
+                    >
+                        Package Sources
+                    </h3>
+
+                    <label
+                        style="
+                            display: flex;
+                            align-items: center;
+                            padding: 12px;
+                            background: var(--bg-tertiary);
+                            border-radius: 8px;
+                            margin-bottom: 8px;
+                            cursor: pointer;
+                        "
+                    >
+                        <input
+                            type="checkbox"
+                            id="enable-aur"
+                            style="width: 18px; height: 18px; cursor: pointer"
+                        />
+                        <div style="margin-left: 12px">
+                            <div
+                                style="
+                                    font-weight: 500;
+                                    color: var(--text-primary);
+                                "
+                            >
+                                AUR (Arch User Repository)
+                            </div>
+                            <div
+                                style="
+                                    font-size: 12px;
+                                    color: var(--text-secondary);
+                                "
+                            >
+                                Community-maintained packages
+                            </div>
+                        </div>
+                    </label>
+
+                    <label
+                        style="
+                            display: flex;
+                            align-items: center;
+                            padding: 12px;
+                            background: var(--bg-tertiary);
+                            border-radius: 8px;
+                            margin-bottom: 8px;
+                            cursor: pointer;
+                        "
+                    >
+                        <input
+                            type="checkbox"
+                            id="enable-flatpak"
+                            style="width: 18px; height: 18px; cursor: pointer"
+                        />
+                        <div style="margin-left: 12px">
+                            <div
+                                style="
+                                    font-weight: 500;
+                                    color: var(--text-primary);
+                                "
+                            >
+                                Flatpak
+                            </div>
+                            <div
+                                style="
+                                    font-size: 12px;
+                                    color: var(--text-secondary);
+                                "
+                            >
+                                Sandboxed applications
+                            </div>
+                        </div>
+                    </label>
+
+                    <label
+                        style="
+                            display: flex;
+                            align-items: center;
+                            padding: 12px;
+                            background: var(--bg-tertiary);
+                            border-radius: 8px;
+                            cursor: pointer;
+                        "
+                    >
+                        <input
+                            type="checkbox"
+                            id="enable-multilib"
+                            style="width: 18px; height: 18px; cursor: pointer"
+                        />
+                        <div style="margin-left: 12px">
+                            <div
+                                style="
+                                    font-weight: 500;
+                                    color: var(--text-primary);
+                                "
+                            >
+                                Multilib
+                            </div>
+                            <div
+                                style="
+                                    font-size: 12px;
+                                    color: var(--text-secondary);
+                                "
+                            >
+                                32-bit packages on 64-bit system
+                            </div>
+                        </div>
+                    </label>
+
+                    <div
+                        id="multilib-password-prompt"
+                        style="display: none; margin-top: 16px"
+                    >
+                        <div
+                            style="
+                                font-size: 13px;
+                                color: var(--text-secondary);
+                                margin-bottom: 8px;
+                            "
+                        >
+                            Enabling multilib requires sudo password:
+                        </div>
+                        <input
+                            type="password"
+                            id="sudo-password"
+                            placeholder="Enter sudo password"
+                            style="
+                                width: 100%;
+                                padding: 10px;
+                                background: var(--bg-primary);
+                                border: 1px solid var(--border);
+                                border-radius: 6px;
+                                color: var(--text-primary);
+                                font-size: 14px;
+                            "
+                        />
+                        <div
+                            id="password-error"
+                            style="
+                                color: var(--error);
+                                font-size: 12px;
+                                margin-top: 8px;
+                                display: none;
+                            "
+                        ></div>
+                    </div>
+
+                    <div
+                        style="
+                            margin-top: 20px;
+                            padding-top: 20px;
+                            border-top: 1px solid var(--border);
+                        "
+                    >
+                        <button
+                            class="install-btn"
+                            id="save-settings"
+                            style="width: 100%"
+                        >
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="module" src="./main.js"></script>
+    </body>
+</html>
