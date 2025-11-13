@@ -1,120 +1,142 @@
 {
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ArchStore",
+  "version": "0.1.0",
+  "identifier": "com.archstore.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:5173",
-    "distDir": "../dist",
-    "withGlobalTauri": true
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "ArchStore",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "execute": true,
-        "sidecar": false,
-        "open": false
-      },
-      "dialog": {
-        "all": true,
-        "ask": true,
-        "confirm": true,
-        "message": true,
-        "open": false,
-        "save": false
-      },
-      "notification": {
-        "all": true
-      },
-      "fs": {
-        "all": false,
-        "readFile": true,
-        "writeFile": false,
-        "readDir": true,
-        "copyFile": false,
-        "createDir": false,
-        "removeDir": false,
-        "removeFile": false,
-        "renameFile": false,
-        "exists": true,
-        "scope": [
-          "/var/lib/pacman/**",
-          "/var/cache/pacman/**",
-          "$HOME/.cache/**",
-          "/usr/share/pixmaps/**",
-          "/usr/share/icons/**",
-          "$HOME/.local/share/icons/**"
-        ]
-      },
-      "path": {
-        "all": true
-      },
-      "protocol": {
-        "all": false,
-        "asset": true,
-        "assetScope": [
-          "/usr/share/pixmaps/**",
-          "/usr/share/icons/**",
-          "$HOME/.local/share/icons/**"
-        ]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "Utility",
-      "copyright": "2024 ArchStore",
+  "bundle": {
+    "active": true,
+    "category": "Utility",
+    "copyright": "2024 ArchStore",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "targets": "all",
+    "longDescription": "A modern, feature-rich package manager GUI for Arch Linux supporting AUR, Flatpak, and official repositories",
+    "shortDescription": "Arch Linux Package Manager GUI",
+    "linux": {
       "deb": {
-        "depends": ["libwebkit2gtk-4.0-37", "libgtk-3-0"]
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.archstore.app",
-      "longDescription": "A modern, feature-rich package manager GUI for Arch Linux supporting AUR, Flatpak, and official repositories",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "Arch Linux Package Manager GUI",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
       }
     },
-    "security": {
-      "csp": null
+    "macOS": {
+      "frameworks": [],
+      "minimumSystemVersion": "10.13"
     },
-    "updater": {
-      "active": false
-    },
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    }
+  },
+  "app": {
     "windows": [
       {
-        "fullscreen": false,
-        "height": 800,
-        "resizable": true,
         "title": "ArchStore - Package Manager",
         "width": 1200,
+        "height": 800,
         "minWidth": 800,
         "minHeight": 600,
         "center": true,
+        "resizable": true,
+        "fullscreen": false,
         "decorations": true,
         "transparent": false
       }
-    ]
+    ],
+    "security": {
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "/usr/share/pixmaps/**",
+          "/usr/share/icons/**",
+          "$HOME/.local/share/icons/**"
+        ]
+      }
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": false,
+      "scope": [
+        {
+          "name": "sudo",
+          "cmd": "sudo",
+          "args": true,
+          "sidecar": false
+        },
+        {
+          "name": "pacman",
+          "cmd": "pacman",
+          "args": true,
+          "sidecar": false
+        },
+        {
+          "name": "yay",
+          "cmd": "yay",
+          "args": true,
+          "sidecar": false
+        },
+        {
+          "name": "paru",
+          "cmd": "paru",
+          "args": true,
+          "sidecar": false
+        },
+        {
+          "name": "flatpak",
+          "cmd": "flatpak",
+          "args": true,
+          "sidecar": false
+        },
+        {
+          "name": "checkupdates",
+          "cmd": "checkupdates",
+          "args": true,
+          "sidecar": false
+        }
+      ]
+    },
+    "dialog": {
+      "all": true,
+      "ask": true,
+      "confirm": true,
+      "message": true,
+      "open": false,
+      "save": false
+    },
+    "notification": {
+      "all": true
+    },
+    "fs": {
+      "all": false,
+      "readFile": true,
+      "writeFile": false,
+      "readDir": true,
+      "copyFile": false,
+      "createDir": false,
+      "removeDir": false,
+      "removeFile": false,
+      "renameFile": false,
+      "exists": true,
+      "scope": [
+        "/var/lib/pacman/**",
+        "/var/cache/pacman/**",
+        "$HOME/.cache/**",
+        "/usr/share/pixmaps/**",
+        "/usr/share/icons/**",
+        "$HOME/.local/share/icons/**"
+      ]
+    }
   }
 }

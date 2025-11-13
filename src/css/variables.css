@@ -1,0 +1,54 @@
+/**
+ * CSS Variables
+ * Colors, spacing, fonts, and other design tokens
+ */
+
+:root {
+  /* Background Colors */
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #242424;
+
+  /* Accent Colors */
+  --accent: #0ea5e9;
+  --accent-hover: #38bdf8;
+
+  /* Text Colors */
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1a1;
+
+  /* Border Colors */
+  --border: #333;
+
+  /* Status Colors */
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
+
+  /* Z-index layers */
+  --z-dropdown: 50;
+  --z-modal: 100;
+  --z-header: 100;
+}

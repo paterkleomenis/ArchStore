@@ -1,6 +1,7 @@
 use crate::models::Package;
 use std::io::Write;
 use std::process::{Command, Stdio};
+use tauri::Emitter;
 
 // Check for available updates
 #[tauri::command]

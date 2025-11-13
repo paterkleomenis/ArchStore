@@ -1,5 +1,6 @@
 use crate::models::InstallProgress;
 use std::process::Command;
+use tauri::Emitter;
 
 // Install package
 #[tauri::command]
