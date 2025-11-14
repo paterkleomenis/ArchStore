@@ -5,391 +5,706 @@
 
 /* Modal Base */
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-modal);
-  opacity: 0;
-  visibility: hidden;
-  transition: all var(--transition-normal);
-  padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+    padding: 20px;
 }
 
 .modal.active {
-  opacity: 1;
-  visibility: visible;
+    opacity: 1;
+    visibility: visible;
 }
 
 .modal-content {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  max-width: 600px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-  animation: modalSlideIn 0.3s ease;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalSlideIn 0.3s ease;
+}
+
+/* Update modal - wider for terminal display */
+#update-modal .modal-content {
+    max-width: 900px;
 }
 
 @keyframes modalSlideIn {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24px;
-  border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
 }
 
 .modal-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .modal-body {
-  padding: 24px;
+    padding: 24px;
 }
 
 /* Remove Options Modal */
 .remove-options-modal-content {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  max-width: 700px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-lg);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
 }
 
 .remove-modal-header {
-  padding: 24px;
-  border-bottom: 1px solid var(--border);
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
 }
 
 .remove-modal-header h2 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 8px;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
 }
 
 .remove-modal-subtitle {
-  color: var(--text-secondary);
-  font-size: 14px;
+    color: var(--text-secondary);
+    font-size: 14px;
 }
 
 .remove-options-container {
-  padding: 24px;
-  display: grid;
-  gap: 16px;
-  grid-template-columns: 1fr;
+    padding: 24px;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
 }
 
 .remove-option-btn {
-  background: var(--bg-tertiary);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  text-align: left;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-align: left;
 }
 
 .remove-option-btn:hover {
-  border-color: var(--accent);
-  background: var(--bg-secondary);
-  transform: translateX(4px);
+    border-color: var(--accent);
+    background: var(--bg-secondary);
+    transform: translateX(4px);
 }
 
 .remove-option-btn:active {
-  transform: translateX(2px);
+    transform: translateX(2px);
 }
 
 .remove-option-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .remove-option-desc {
-  color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.5;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .remove-option-desc code {
-  background: var(--bg-primary);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  font-family: "Courier New", monospace;
-  font-size: 12px;
-  color: var(--accent);
+    background: var(--bg-primary);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    color: var(--accent);
 }
 
 .remove-option-badge {
-  display: inline-block;
-  background: var(--error);
-  color: white;
-  padding: 4px 10px;
-  border-radius: var(--radius-md);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    display: inline-block;
+    background: var(--error);
+    color: white;
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .remove-modal-footer {
-  padding: 20px 24px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
 }
 
 .cancel-remove-btn {
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all var(--transition-normal);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
 }
 
 .cancel-remove-btn:hover {
-  background: var(--bg-secondary);
-  border-color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border-color: var(--text-secondary);
 }
 
 .remove-icon {
-  font-size: 24px;
-  opacity: 0.8;
+    font-size: 24px;
+    opacity: 0.8;
 }
 
 /* Password Prompt Modal */
 .password-prompt {
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  margin-bottom: 20px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
 }
 
 .password-prompt label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--text-primary);
-  font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .password-prompt input[type="password"] {
-  width: 100%;
-  padding: 10px 12px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 14px;
-  transition: all var(--transition-normal);
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all var(--transition-normal);
 }
 
 .password-prompt input[type="password"]:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
 .password-error {
-  color: var(--error);
-  font-size: 13px;
-  margin-top: 8px;
-  display: none;
+    color: var(--error);
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
 }
 
 .password-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 16px;
 }
 
 /* Settings Modal */
 .settings-section {
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
 }
 
 .settings-section:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 .settings-section h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
 }
 
 .setting-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
 }
 
 .setting-info {
-  flex: 1;
+    flex: 1;
 }
 
 .setting-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
 }
 
 .setting-description {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.4;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
 }
 
 .setting-toggle {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 /* Toggle Switch */
 .toggle-switch {
-  position: relative;
-  width: 48px;
-  height: 24px;
+    position: relative;
+    width: 48px;
+    height: 24px;
 }
 
 .toggle-switch input[type="checkbox"] {
-  opacity: 0;
-  width: 0;
-  height: 0;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Settings checkboxes */
+input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+label:has(input[type="checkbox"]:disabled) {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Update package item hover effects */
+.update-package-item:hover {
+    background: var(--bg-secondary) !important;
+}
+
+.update-package-item {
+    transition: background 0.2s;
+}
+
+/* Terminal scrollbar styling */
+#update-terminal-output::-webkit-scrollbar {
+    width: 12px;
+}
+
+#update-terminal-output::-webkit-scrollbar-track {
+    background: #0d0d0d;
+    border-left: 1px solid #2a2a2a;
+}
+
+#update-terminal-output::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 6px;
+    border: 2px solid #1a1b26;
+}
+
+#update-terminal-output::-webkit-scrollbar-thumb:hover {
+    background: #4a4a4a;
+}
+
+#update-terminal-output::-webkit-scrollbar-thumb:active {
+    background: #5a5a5a;
+}
+
+/* Terminal line animations */
+.terminal-line {
+    animation: terminalFadeIn 0.2s ease-out;
+}
+
+@keyframes terminalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Terminal cursor blink animation */
+@keyframes cursorBlink {
+    0%,
+    50% {
+        opacity: 1;
+    }
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
+.terminal-cursor {
+    animation: cursorBlink 1s step-end infinite;
 }
 
 .toggle-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--bg-primary);
-  border: 2px solid var(--border);
-  transition: 0.3s;
-  border-radius: 24px;
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-primary);
+    border: 2px solid var(--border);
+    transition: 0.3s;
+    border-radius: 24px;
 }
 
 .toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 2px;
-  bottom: 2px;
-  background-color: var(--text-secondary);
-  transition: 0.3s;
-  border-radius: 50%;
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--text-secondary);
+    transition: 0.3s;
+    border-radius: 50%;
 }
 
 input:checked + .toggle-slider {
-  background-color: var(--accent);
-  border-color: var(--accent);
+    background-color: var(--accent);
+    border-color: var(--accent);
 }
 
 input:checked + .toggle-slider:before {
-  transform: translateX(24px);
-  background-color: white;
+    transform: translateX(24px);
+    background-color: white;
 }
 
 .toggle-slider:hover {
-  opacity: 0.9;
+    opacity: 0.9;
 }
 
 /* Update Modal Specific */
 .updates-list {
-  max-height: 400px;
-  overflow-y: auto;
-  margin-bottom: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 16px;
 }
 
 .update-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
 }
 
 .update-info {
-  flex: 1;
+    flex: 1;
 }
 
 .update-name {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 4px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
 }
 
 .update-versions {
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-family: "Courier New", monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: "Courier New", monospace;
+}
+
+/* Terminal Output Styles */
+.terminal {
+    background: #000;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    font-family: "Courier New", "Consolas", "Monaco", monospace;
+    font-size: 13px;
+    color: #0f0;
+    height: 400px;
+    overflow-y: auto;
+    line-height: 1.6;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.terminal::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 0, 0.03) 0px,
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+.terminal-line {
+    margin-bottom: 4px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    position: relative;
+    z-index: 2;
+    animation: terminalLineFadeIn 0.2s ease-out;
+}
+
+@keyframes terminalLineFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.terminal-line:hover {
+    background: rgba(0, 255, 0, 0.05);
+    padding: 2px 4px;
+    margin: 0 -4px 4px -4px;
+    border-radius: 2px;
+}
+
+/* Terminal scrollbar styling */
+.terminal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal::-webkit-scrollbar-track {
+    background: #111;
+    border-radius: 4px;
+}
+
+.terminal::-webkit-scrollbar-thumb {
+    background: #0f0;
+    border-radius: 4px;
+    opacity: 0.5;
+}
+
+.terminal::-webkit-scrollbar-thumb:hover {
+    background: #0f0;
+    opacity: 0.8;
+}
+
+/* Progress Bar Styles */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.progress-bar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    animation: progressShimmer 2s infinite;
+}
+
+@keyframes progressShimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    width: 0%;
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: progressGlow 1.5s infinite;
+}
+
+@keyframes progressGlow {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Close Button */
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-normal);
+    line-height: 1;
+}
+
+.close-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    transform: rotate(90deg);
+}
+
+.close-btn:active {
+    transform: rotate(90deg) scale(0.9);
+}
+
+/* Modal Buttons */
+.modal-button {
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    border: none;
+    outline: none;
+}
+
+.modal-button-primary {
+    background: var(--accent);
+    color: white;
+}
+
+.modal-button-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.modal-button-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.modal-button-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-secondary);
+}
+
+.modal-button-danger {
+    background: var(--error);
+    color: white;
+}
+
+.modal-button-danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.modal-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.modal-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
 }
 
 /* Responsive Modal Design */
 @media (max-width: 640px) {
-  .modal-content,
-  .remove-options-modal-content {
-    max-width: 100%;
-    margin: 20px;
-  }
+    .modal-content,
+    .remove-options-modal-content {
+        max-width: 100%;
+        margin: 20px;
+    }
 
-  .modal-header,
-  .modal-body,
-  .remove-modal-header,
-  .remove-options-container {
-    padding: 16px;
-  }
+    .modal-header,
+    .modal-body,
+    .remove-modal-header,
+    .remove-options-container {
+        padding: 16px;
+    }
 
-  .modal-title,
-  .remove-modal-header h2 {
-    font-size: 18px;
-  }
+    .modal-title,
+    .remove-modal-header h2 {
+        font-size: 18px;
+    }
+
+    .terminal {
+        height: 300px;
+        font-size: 11px;
+    }
 }

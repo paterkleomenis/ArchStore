@@ -76,6 +76,27 @@ export async function updateSystem(password) {
   return await invoke("update_system", { password });
 }
 
+/**
+ * Update only official packages
+ */
+export async function updateOfficial(password) {
+  return await invoke("update_official", { password });
+}
+
+/**
+ * Update only AUR packages
+ */
+export async function updateAur(password) {
+  return await invoke("update_aur", { password });
+}
+
+/**
+ * Update only Flatpak packages
+ */
+export async function updateFlatpak() {
+  return await invoke("update_flatpak");
+}
+
 // ============================================================================
 // Settings Commands
 // ============================================================================
@@ -85,6 +106,13 @@ export async function updateSystem(password) {
  */
 export async function enableMultilib(password) {
   return await invoke("enable_multilib", { password });
+}
+
+/**
+ * Check which package sources are available on the system
+ */
+export async function checkSystemCapabilities() {
+  return await invoke("check_system_capabilities");
 }
 
 // ============================================================================

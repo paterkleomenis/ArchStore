@@ -8,4 +8,7 @@ pub use package::{get_app_icon, get_package_info};
 pub use search::{
     get_installed_packages, search_aur_packages, search_flatpak_packages, search_official_packages,
 };
-pub use system::{check_updates, enable_multilib, update_system};
+pub use system::{
+    check_system_capabilities, check_updates, enable_multilib, update_aur, update_flatpak,
+    update_official, update_system,
+};

@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getAppIcon } from "../utils/icons.js";
+import { getAppIcon, getAppIconSync } from "../utils/icons.js";
+import { preloadIcons } from "../utils/iconCache.js";
 import {
   escapeHtml,
   setCurrentView,
@@ -69,7 +70,7 @@ async function fetchPopularApps() {
       displayName: "Firefox",
       description: "Fast, Private & Safe Web Browser",
       sources: { official: "firefox", flatpak: "org.mozilla.firefox" },
-      icon: getAppIcon("firefox"),
+      icon: getAppIconSync("firefox"),
       category: "browsers",
     },
     {
@@ -77,7 +78,7 @@ async function fetchPopularApps() {
       displayName: "Chromium",
       description: "Open-source web browser from Google",
       sources: { official: "chromium", flatpak: "org.chromium.Chromium" },
-      icon: getAppIcon("chromium"),
+      icon: getAppIconSync("chromium"),
       category: "browsers",
     },
     {
@@ -85,7 +86,7 @@ async function fetchPopularApps() {
       displayName: "Brave Browser",
       description: "Privacy-focused browser with ad blocking",
       sources: { aur: "brave-bin" },
-      icon: getAppIcon("brave"),
+      icon: getAppIconSync("brave"),
       category: "browsers",
     },
     {
@@ -93,7 +94,7 @@ async function fetchPopularApps() {
       displayName: "Zen Browser",
       description: "Privacy-focused Firefox-based browser",
       sources: { aur: "zen-browser-bin" },
-      icon: getAppIcon("zen-browser"),
+      icon: getAppIconSync("zen-browser"),
       category: "browsers",
     },
     {
@@ -101,7 +102,7 @@ async function fetchPopularApps() {
       displayName: "Floorp",
       description: "Customizable Firefox-based browser",
       sources: { aur: "floorp-bin" },
-      icon: getAppIcon("floorp"),
+      icon: getAppIconSync("floorp"),
       category: "browsers",
     },
     {
@@ -112,7 +113,7 @@ async function fetchPopularApps() {
         aur: "visual-studio-code-bin",
         flatpak: "com.visualstudio.code",
       },
-      icon: getAppIcon("code"),
+      icon: getAppIconSync("code"),
       category: "development",
     },
     {
@@ -120,7 +121,7 @@ async function fetchPopularApps() {
       displayName: "Git",
       description: "Fast distributed version control system",
       sources: { official: "git" },
-      icon: getAppIcon("git"),
+      icon: getAppIconSync("git"),
       category: "development",
     },
     {
@@ -128,7 +129,7 @@ async function fetchPopularApps() {
       displayName: "Docker",
       description: "Container platform",
       sources: { official: "docker" },
-      icon: getAppIcon("docker"),
+      icon: getAppIconSync("docker"),
       category: "development",
     },
     {
@@ -136,7 +137,7 @@ async function fetchPopularApps() {
       displayName: "Zed",
       description: "High-performance code editor",
       sources: { aur: "zed" },
-      icon: getAppIcon("zed"),
+      icon: getAppIconSync("zed"),
       category: "development",
     },
     {
@@ -144,7 +145,7 @@ async function fetchPopularApps() {
       displayName: "LM Studio",
       description: "Run LLMs locally",
       sources: { aur: "lmstudio" },
-      icon: getAppIcon("lmstudio"),
+      icon: getAppIconSync("lmstudio"),
       category: "development",
     },
     {
@@ -152,7 +153,7 @@ async function fetchPopularApps() {
       displayName: "Ollama",
       description: "Run large language models locally",
       sources: { official: "ollama" },
-      icon: getAppIcon("ollama"),
+      icon: getAppIconSync("ollama"),
       category: "development",
     },
     {
@@ -160,7 +161,7 @@ async function fetchPopularApps() {
       displayName: "VLC Media Player",
       description: "Multi-platform media player",
       sources: { official: "vlc", flatpak: "org.videolan.VLC" },
-      icon: getAppIcon("vlc"),
+      icon: getAppIconSync("vlc"),
       category: "multimedia",
     },
     {
@@ -168,7 +169,7 @@ async function fetchPopularApps() {
       displayName: "GIMP",
       description: "GNU Image Manipulation Program",
       sources: { official: "gimp", flatpak: "org.gimp.GIMP" },
-      icon: getAppIcon("gimp"),
+      icon: getAppIconSync("gimp"),
       category: "graphics",
     },
     {
@@ -176,7 +177,7 @@ async function fetchPopularApps() {
       displayName: "OBS Studio",
       description: "Video recording and streaming",
       sources: { official: "obs-studio", flatpak: "com.obsproject.Studio" },
-      icon: getAppIcon("obs-studio"),
+      icon: getAppIconSync("obs-studio"),
       category: "multimedia",
     },
     {
@@ -184,7 +185,7 @@ async function fetchPopularApps() {
       displayName: "Spotify",
       description: "Music streaming service",
       sources: { flatpak: "com.spotify.Client" },
-      icon: getAppIcon("spotify"),
+      icon: getAppIconSync("spotify"),
       category: "multimedia",
     },
     {
@@ -192,7 +193,7 @@ async function fetchPopularApps() {
       displayName: "Audacity",
       description: "Audio editing software",
       sources: { official: "audacity", flatpak: "org.audacityteam.Audacity" },
-      icon: getAppIcon("audacity"),
+      icon: getAppIconSync("audacity"),
       category: "multimedia",
     },
     {
@@ -200,7 +201,7 @@ async function fetchPopularApps() {
       displayName: "Stremio",
       description: "Media streaming application",
       sources: { flatpak: "com.stremio.Stremio" },
-      icon: getAppIcon("stremio"),
+      icon: getAppIconSync("stremio"),
       category: "multimedia",
     },
     {
@@ -208,7 +209,7 @@ async function fetchPopularApps() {
       displayName: "Blender",
       description: "3D creation suite",
       sources: { official: "blender" },
-      icon: getAppIcon("blender"),
+      icon: getAppIconSync("blender"),
       category: "graphics",
     },
     {
@@ -216,7 +217,7 @@ async function fetchPopularApps() {
       displayName: "Inkscape",
       description: "Vector graphics editor",
       sources: { official: "inkscape", flatpak: "org.inkscape.Inkscape" },
-      icon: getAppIcon("inkscape"),
+      icon: getAppIconSync("inkscape"),
       category: "graphics",
     },
     {
@@ -224,7 +225,7 @@ async function fetchPopularApps() {
       displayName: "Krita",
       description: "Digital painting application",
       sources: { official: "krita", flatpak: "org.kde.krita" },
-      icon: getAppIcon("krita"),
+      icon: getAppIconSync("krita"),
       category: "graphics",
     },
     {
@@ -232,7 +233,7 @@ async function fetchPopularApps() {
       displayName: "LibreOffice",
       description: "Office suite",
       sources: { official: "libreoffice-fresh" },
-      icon: getAppIcon("libreoffice"),
+      icon: getAppIconSync("libreoffice"),
       category: "office",
     },
     {
@@ -240,7 +241,7 @@ async function fetchPopularApps() {
       displayName: "Apache OpenOffice",
       description: "Open source office suite",
       sources: { aur: "openoffice-bin" },
-      icon: getAppIcon("openoffice"),
+      icon: getAppIconSync("openoffice"),
       category: "office",
     },
     {
@@ -248,7 +249,7 @@ async function fetchPopularApps() {
       displayName: "ONLYOFFICE",
       description: "Office suite with MS Office compatibility",
       sources: { aur: "onlyoffice-bin" },
-      icon: getAppIcon("onlyoffice"),
+      icon: getAppIconSync("onlyoffice"),
       category: "office",
     },
     {
@@ -256,7 +257,7 @@ async function fetchPopularApps() {
       displayName: "Thunderbird",
       description: "Email client",
       sources: { official: "thunderbird" },
-      icon: getAppIcon("thunderbird"),
+      icon: getAppIconSync("thunderbird"),
       category: "internet",
     },
     {
@@ -264,7 +265,7 @@ async function fetchPopularApps() {
       displayName: "Discord",
       description: "Voice and chat for gamers",
       sources: { flatpak: "com.discordapp.Discord" },
-      icon: getAppIcon("discord"),
+      icon: getAppIconSync("discord"),
       category: "internet",
     },
     {
@@ -272,7 +273,7 @@ async function fetchPopularApps() {
       displayName: "Telegram",
       description: "Messaging app",
       sources: { official: "telegram-desktop" },
-      icon: getAppIcon("telegram"),
+      icon: getAppIconSync("telegram"),
       category: "internet",
     },
     {
@@ -283,7 +284,7 @@ async function fetchPopularApps() {
         official: "qbittorrent",
         flatpak: "org.qbittorrent.qBittorrent",
       },
-      icon: getAppIcon("qbittorrent"),
+      icon: getAppIconSync("qbittorrent"),
       category: "internet",
     },
     {
@@ -295,7 +296,7 @@ async function fetchPopularApps() {
         aur: "steam",
         flatpak: "com.valvesoftware.Steam",
       },
-      icon: getAppIcon("steam"),
+      icon: getAppIconSync("steam"),
       category: "gaming",
     },
     {
@@ -303,7 +304,7 @@ async function fetchPopularApps() {
       displayName: "Heroic Games Launcher",
       description: "Epic Games and GOG launcher",
       sources: { flatpak: "com.heroicgameslauncher.hgl" },
-      icon: getAppIcon("heroic"),
+      icon: getAppIconSync("heroic"),
       category: "gaming",
     },
     {
@@ -311,7 +312,7 @@ async function fetchPopularApps() {
       displayName: "htop",
       description: "Interactive process viewer",
       sources: { official: "htop" },
-      icon: getAppIcon("htop"),
+      icon: getAppIconSync("htop"),
       category: "system",
     },
     {
@@ -319,7 +320,7 @@ async function fetchPopularApps() {
       displayName: "Mission Center",
       description: "System monitor for Linux",
       sources: { flatpak: "io.missioncenter.MissionCenter" },
-      icon: getAppIcon("mission-center"),
+      icon: getAppIconSync("mission-center"),
       category: "system",
     },
     {
@@ -327,7 +328,7 @@ async function fetchPopularApps() {
       displayName: "Ghostty",
       description: "Modern terminal emulator",
       sources: { aur: "ghostty" },
-      icon: getAppIcon("ghostty"),
+      icon: getAppIconSync("ghostty"),
       category: "system",
     },
     {
@@ -335,10 +336,13 @@ async function fetchPopularApps() {
       displayName: "MPV",
       description: "Minimalist video player",
       sources: { official: "mpv", flatpak: "io.mpv.Mpv" },
-      icon: getAppIcon("mpv"),
+      icon: getAppIconSync("mpv"),
       category: "multimedia",
     },
   ];
+
+  // Preload icons in background for better UX
+  preloadIcons(popularApps).catch(() => {});
 
   return popularApps;
 }
@@ -404,7 +408,7 @@ function renderHomeApps(apps) {
       html += `
         <div class="popular-app-card" data-app='${JSON.stringify(app).replace(/'/g, "&#39;")}'>
           <div class="app-icon">
-            <img src="${escapeHtml(app.icon)}" alt="${escapeHtml(app.name)}" onerror="this.src='https://via.placeholder.com/64?text=${app.name[0].toUpperCase()}'">
+            <img src="${escapeHtml(app.icon)}" alt="${escapeHtml(app.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/64?text=${app.name[0].toUpperCase()}'">
           </div>
           <div class="app-info">
             <div class="app-name">${escapeHtml(app.displayName)}</div>
@@ -425,6 +429,24 @@ function renderHomeApps(apps) {
   html += `</div>`;
 
   container.innerHTML = html;
+
+  // Load cached icons asynchronously for better quality
+  setTimeout(() => {
+    document.querySelectorAll(".popular-app-card").forEach(async (card) => {
+      const appData = JSON.parse(card.dataset.app);
+      const img = card.querySelector(".app-icon img");
+      if (img && appData.name) {
+        try {
+          const cachedIcon = await getAppIcon(appData.name);
+          if (cachedIcon && cachedIcon !== img.src) {
+            img.src = cachedIcon;
+          }
+        } catch (err) {
+          // Ignore errors, keep using the original URL
+        }
+      }
+    });
+  }, 100);
 
   // Add category tab handlers
   document.querySelectorAll(".category-tab").forEach((tab) => {

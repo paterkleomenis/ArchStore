@@ -1,4 +1,12 @@
-import { checkUpdates, updateSystem, enableMultilib } from "./tauri.js";
+import {
+  checkUpdates,
+  updateSystem,
+  updateOfficial,
+  updateAur,
+  updateFlatpak,
+  enableMultilib,
+  checkSystemCapabilities,
+} from "./tauri.js";
 
 /**
  * System-wide operations API
@@ -22,11 +30,42 @@ export async function performSystemUpdate(password) {
 }
 
 /**
+ * Update only official packages (pacman -Syu)
+ * @param {string} password - User password for sudo operations
+ */
+export async function performOfficialUpdate(password) {
+  return await updateOfficial(password);
+}
+
+/**
+ * Update only AUR packages (yay/paru -Sua)
+ * @param {string} password - User password for sudo operations
+ */
+export async function performAurUpdate(password) {
+  return await updateAur(password);
+}
+
+/**
+ * Update only Flatpak packages (flatpak update)
+ */
+export async function performFlatpakUpdate() {
+  return await updateFlatpak();
+}
+
+/**
  * Enable multilib repository in pacman.conf
  * @param {string} password - User password for sudo operations
  */
 export async function enableMultilibRepository(password) {
   return await enableMultilib(password);
+}
+
+/**
+ * Check which package sources are available on the system
+ * @returns {Promise<Object>} Object with has_aur_helper, has_flatpak, multilib_enabled
+ */
+export async function getSystemCapabilities() {
+  return await checkSystemCapabilities();
 }
 
 /**

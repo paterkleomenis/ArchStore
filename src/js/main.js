@@ -224,9 +224,16 @@ function setupEventListeners() {
     checkUpdatesBtn.addEventListener("click", handleCheckUpdates);
   }
 
-  const updateAllBtn = document.getElementById("update-all-btn");
-  if (updateAllBtn) {
-    updateAllBtn.addEventListener("click", handleUpdateAll);
+  // Check All/Uncheck All toggle
+  const checkAllBtn = document.getElementById("check-all-updates");
+  if (checkAllBtn) {
+    checkAllBtn.addEventListener("click", handleCheckAllToggle);
+  }
+
+  // Update Selected button
+  const updateSelectedBtn = document.getElementById("update-selected-btn");
+  if (updateSelectedBtn) {
+    updateSelectedBtn.addEventListener("click", handleUpdateSelected);
   }
 }
 
@@ -247,26 +254,108 @@ async function handleCheckUpdates() {
       updatesCount.textContent = updates.length;
       updatesList.style.display = "block";
 
+      // Group updates by source for better organization
+      const officialUpdates = updates.filter((u) => u.source === "official");
+      const aurUpdates = updates.filter((u) => u.source === "aur");
+      const flatpakUpdates = updates.filter((u) => u.source === "flatpak");
+
+      // Build HTML with checkboxes for each package
       let html = "";
-      updates.forEach((update) => {
+
+      // Helper function to create package rows
+      const createPackageRow = (update, index) => {
         const sourceClass = `source-${update.source}`;
-        html += `
-            <div style="padding: 8px; margin-bottom: 4px; background: var(--bg-primary); border-radius: 6px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
+        return `
+          <label style="
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 4px;
+            background: var(--bg-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+          " class="update-package-item">
+            <input
+              type="checkbox"
+              class="update-package-checkbox"
+              data-package-name="${escapeHtml(update.name)}"
+              data-package-source="${update.source}"
+              data-package-version="${escapeHtml(update.version)}"
+              checked
+              style="width: 18px; height: 18px; margin-right: 12px; cursor: pointer;"
+            />
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
                   <span style="font-weight: 500; color: var(--text-primary);">${escapeHtml(update.name)}</span>
-                  <span class="source-badge ${sourceClass}" style="margin-left: 8px; font-size: 10px;">${update.source}</span>
+                  <span class="source-badge ${sourceClass}" style="font-size: 10px;">${update.source}</span>
                 </div>
                 <span style="font-size: 12px; color: var(--text-secondary);">${escapeHtml(update.version)}</span>
               </div>
-              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">${escapeHtml(update.description)}</div>
+              <div style="font-size: 11px; color: var(--text-secondary);">${escapeHtml(update.description)}</div>
             </div>
-          `;
-      });
+          </label>
+        `;
+      };
+
+      // Official packages section
+      if (officialUpdates.length > 0) {
+        html += `
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase;">
+              Official Repositories (${officialUpdates.length})
+            </div>
+        `;
+        officialUpdates.forEach((update, index) => {
+          html += createPackageRow(update, index);
+        });
+        html += `</div>`;
+      }
+
+      // AUR packages section
+      if (aurUpdates.length > 0) {
+        html += `
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase;">
+              AUR (${aurUpdates.length})
+            </div>
+        `;
+        aurUpdates.forEach((update, index) => {
+          html += createPackageRow(update, index);
+        });
+        html += `</div>`;
+      }
+
+      // Flatpak packages section
+      if (flatpakUpdates.length > 0) {
+        html += `
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase;">
+              Flatpak (${flatpakUpdates.length})
+            </div>
+        `;
+        flatpakUpdates.forEach((update, index) => {
+          html += createPackageRow(update, index);
+        });
+        html += `</div>`;
+      }
+
       updatesContainer.innerHTML = html;
+
+      // Add change listeners to all checkboxes
+      const checkboxes = updatesContainer.querySelectorAll(
+        ".update-package-checkbox",
+      );
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", updateCheckAllButtonText);
+      });
 
       btn.textContent = `${updates.length} Updates Available`;
       btn.style.background = "var(--success)";
+
+      // Update Check All button text
+      updateCheckAllButtonText();
     } else {
       updatesList.style.display = "none";
       btn.textContent = "System is Up to Date";
@@ -289,41 +378,320 @@ async function handleCheckUpdates() {
   }
 }
 
-// Handle update all button
-async function handleUpdateAll() {
-  const btn = document.getElementById("update-all-btn");
+// Update the Check All button text based on checkbox states
+function updateCheckAllButtonText() {
+  const btn = document.getElementById("check-all-updates");
+  if (!btn) return;
+
+  const checkboxes = document.querySelectorAll(".update-package-checkbox");
+  if (checkboxes.length === 0) {
+    btn.textContent = "Check All";
+    return;
+  }
+
+  const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
+  btn.textContent = allChecked ? "Uncheck All" : "Check All";
+
+  // Update selected count
+  const selectedCount = Array.from(checkboxes).filter(
+    (cb) => cb.checked,
+  ).length;
+  const selectedCountNumber = document.getElementById("selected-count-number");
+  if (selectedCountNumber) {
+    selectedCountNumber.textContent = selectedCount;
+  }
+}
+
+// Handle Check All / Uncheck All toggle
+function handleCheckAllToggle() {
+  const checkboxes = document.querySelectorAll(".update-package-checkbox");
+  if (checkboxes.length === 0) return;
+
+  const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
+
+  // Toggle all checkboxes
+  checkboxes.forEach((checkbox) => {
+    checkbox.checked = !allChecked;
+  });
+
+  // Update button text
+  updateCheckAllButtonText();
+}
+
+// Handle update selected packages
+async function handleUpdateSelected() {
+  console.log("[Update] handleUpdateSelected called");
+  const btn = document.getElementById("update-selected-btn");
   const { showPasswordPrompt } = await import("./ui/modal.js");
   const { showUpdateModal, addUpdateTerminalLine } = await import(
     "./ui/modal.js"
   );
 
+  // Get all checked packages
+  const checkboxes = document.querySelectorAll(
+    ".update-package-checkbox:checked",
+  );
+  console.log(`[Update] Found ${checkboxes.length} checked packages`);
+
+  if (checkboxes.length === 0) {
+    alert("Please select at least one package to update");
+    return;
+  }
+
+  // Group selected packages by source
+  const selectedPackages = {
+    official: [],
+    aur: [],
+    flatpak: [],
+  };
+
+  checkboxes.forEach((checkbox) => {
+    const packageName = checkbox.dataset.packageName;
+    const source = checkbox.dataset.packageSource;
+    selectedPackages[source].push(packageName);
+  });
+
+  const totalPackages = checkboxes.length;
+  console.log("[Update] Selected packages:", selectedPackages);
+
   btn.textContent = "Updating...";
   btn.disabled = true;
 
   try {
-    const password = await showPasswordPrompt();
-    showUpdateModal();
+    let password = null;
 
-    await invoke("update_system", { password });
+    // Get password if needed (for official or AUR)
+    if (
+      selectedPackages.official.length > 0 ||
+      selectedPackages.aur.length > 0
+    ) {
+      console.log("[Update] Prompting for password...");
+      password = await showPasswordPrompt();
+      console.log("[Update] Password received, length:", password.length);
+    }
+
+    // Force remove ALL modals first
+    console.log("[Update] Force removing all modals...");
+
+    // Remove password modal
+    const passwordModals = document.querySelectorAll("#password-prompt-modal");
+    passwordModals.forEach((pm) => {
+      console.log("[Update] Removing password modal");
+      pm.remove();
+    });
+
+    // Add visual debug indicator
+    let debugDiv = document.createElement("div");
+    debugDiv.id = "update-debug-indicator";
+    debugDiv.style.position = "fixed";
+    debugDiv.style.top = "50%";
+    debugDiv.style.left = "50%";
+    debugDiv.style.transform = "translate(-50%, -50%)";
+    debugDiv.style.padding = "40px 60px";
+    debugDiv.style.background = "#1793d1";
+    debugDiv.style.color = "white";
+    debugDiv.style.fontSize = "24px";
+    debugDiv.style.fontWeight = "bold";
+    debugDiv.style.borderRadius = "12px";
+    debugDiv.style.zIndex = "99998";
+    debugDiv.style.boxShadow = "0 20px 60px rgba(0,0,0,0.8)";
+    debugDiv.textContent = "Preparing Terminal...";
+    document.body.appendChild(debugDiv);
+
+    // Close settings modal
+    const settingsModal = document.getElementById("settings-modal");
+    if (settingsModal) {
+      console.log("[Update] Closing settings modal");
+      settingsModal.classList.remove("active");
+    }
+
+    // Remove any stray modals with "modal active" class
+    const activeModals = document.querySelectorAll(".modal.active");
+    activeModals.forEach((m) => {
+      if (m.id !== "update-modal") {
+        console.log("[Update] Removing active modal:", m.id);
+        m.classList.remove("active");
+        m.remove();
+      }
+    });
+
+    // Longer delay to ensure all modals are gone
+    console.log("[Update] Waiting for modals to clear...");
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Show terminal modal
+    console.log("[Update] Showing terminal modal...");
+
+    // Remove debug indicator
+    debugDiv = document.getElementById("update-debug-indicator");
+    if (debugDiv) {
+      debugDiv.remove();
+    }
+
+    showUpdateModal(`Updating ${totalPackages} Package(s)`);
+    console.log("[Update] Terminal modal shown, adding summary...");
+
+    // Add selected packages summary
+    addUpdateTerminalLine(
+      `:: Selected ${totalPackages} package(s) for update:`,
+      "normal",
+    );
+    if (selectedPackages.official.length > 0) {
+      addUpdateTerminalLine(
+        `   - Official: ${selectedPackages.official.length} package(s)`,
+        "normal",
+      );
+    }
+    if (selectedPackages.aur.length > 0) {
+      addUpdateTerminalLine(
+        `   - AUR: ${selectedPackages.aur.length} package(s)`,
+        "normal",
+      );
+    }
+    if (selectedPackages.flatpak.length > 0) {
+      addUpdateTerminalLine(
+        `   - Flatpak: ${selectedPackages.flatpak.length} package(s)`,
+        "normal",
+      );
+    }
+    addUpdateTerminalLine("", "normal");
+
+    let completedCount = 0;
+
+    // Update official packages
+    if (selectedPackages.official.length > 0) {
+      addUpdateTerminalLine(
+        `:: Updating ${selectedPackages.official.length} official package(s)...`,
+        "normal",
+      );
+      addUpdateTerminalLine("", "normal");
+
+      for (const pkgName of selectedPackages.official) {
+        completedCount++;
+        addUpdateTerminalLine(
+          `[${completedCount}/${totalPackages}] Updating ${pkgName} from official repositories...`,
+          "normal",
+        );
+
+        try {
+          await invoke("install_package", {
+            packageName: pkgName,
+            source: "official",
+            password: password,
+          });
+          addUpdateTerminalLine(`✓ Successfully updated ${pkgName}`, "normal");
+        } catch (err) {
+          addUpdateTerminalLine(
+            `✗ Failed to update ${pkgName}: ${err}`,
+            "error",
+          );
+        }
+        addUpdateTerminalLine("", "normal");
+      }
+    }
+
+    // Update AUR packages
+    if (selectedPackages.aur.length > 0) {
+      addUpdateTerminalLine(
+        `:: Updating ${selectedPackages.aur.length} AUR package(s)...`,
+        "normal",
+      );
+      addUpdateTerminalLine("", "normal");
+
+      for (const pkgName of selectedPackages.aur) {
+        completedCount++;
+        addUpdateTerminalLine(
+          `[${completedCount}/${totalPackages}] Updating ${pkgName} from AUR...`,
+          "normal",
+        );
+
+        try {
+          await invoke("install_package", {
+            packageName: pkgName,
+            source: "aur",
+            password: password,
+          });
+          addUpdateTerminalLine(`✓ Successfully updated ${pkgName}`, "normal");
+        } catch (err) {
+          addUpdateTerminalLine(
+            `✗ Failed to update ${pkgName}: ${err}`,
+            "error",
+          );
+        }
+        addUpdateTerminalLine("", "normal");
+      }
+    }
+
+    // Update Flatpak packages
+    if (selectedPackages.flatpak.length > 0) {
+      addUpdateTerminalLine(
+        `:: Updating ${selectedPackages.flatpak.length} Flatpak package(s)...`,
+        "normal",
+      );
+      addUpdateTerminalLine("", "normal");
+
+      for (const pkgName of selectedPackages.flatpak) {
+        completedCount++;
+        addUpdateTerminalLine(
+          `[${completedCount}/${totalPackages}] Updating ${pkgName} from Flatpak...`,
+          "normal",
+        );
+
+        try {
+          await invoke("install_package", {
+            packageName: pkgName,
+            source: "flatpak",
+            password: "",
+          });
+          addUpdateTerminalLine(`✓ Successfully updated ${pkgName}`, "normal");
+        } catch (err) {
+          addUpdateTerminalLine(
+            `✗ Failed to update ${pkgName}: ${err}`,
+            "error",
+          );
+        }
+        addUpdateTerminalLine("", "normal");
+      }
+    }
+
+    addUpdateTerminalLine("=".repeat(60), "normal");
+    addUpdateTerminalLine(
+      `:: Update complete! ${totalPackages} package(s) processed.`,
+      "normal",
+    );
+    addUpdateTerminalLine("=".repeat(60), "normal");
 
     setTimeout(() => {
-      closeSettings();
+      const modal = document.getElementById("update-modal");
+      if (modal) {
+        modal.classList.remove("active");
+      }
+      // Re-open settings and refresh updates
+      const settingsModal = document.getElementById("settings-modal");
+      if (settingsModal) {
+        settingsModal.classList.add("active");
+      }
       setTimeout(() => {
         handleCheckUpdates();
-      }, 1000);
-    }, 2000);
+      }, 500);
+    }, 3000);
   } catch (error) {
     if (error.message === "Password prompt cancelled") {
       console.log("Update cancelled by user");
-      if (document.getElementById("update-modal")) {
-        addUpdateTerminalLine("Update cancelled by user", "error");
-      }
+      addUpdateTerminalLine("", "normal");
+      addUpdateTerminalLine("=".repeat(60), "error");
+      addUpdateTerminalLine(":: Update cancelled by user", "error");
+      addUpdateTerminalLine("=".repeat(60), "error");
     } else {
-      console.error("Failed to update system:", error);
-      addUpdateTerminalLine("ERROR: " + error, "error");
+      console.error("Failed to update:", error);
+      addUpdateTerminalLine("", "normal");
+      addUpdateTerminalLine("=".repeat(60), "error");
+      addUpdateTerminalLine(`:: ERROR: ${error}`, "error");
+      addUpdateTerminalLine("=".repeat(60), "error");
     }
+  } finally {
     btn.disabled = false;
-    btn.textContent = "Update All Packages";
+    btn.textContent = "Update Selected";
   }
 }
 

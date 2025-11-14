@@ -9,7 +9,6 @@ use commands::*;
 
 fn main() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_fs::init())
@@ -22,8 +21,12 @@ fn main() {
             remove_package,
             get_package_info,
             update_system,
+            update_official,
+            update_aur,
+            update_flatpak,
             check_updates,
             enable_multilib,
+            check_system_capabilities,
             get_app_icon,
         ])
         .run(tauri::generate_context!())

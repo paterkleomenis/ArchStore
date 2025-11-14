@@ -1,5 +1,6 @@
 use crate::models::InstallProgress;
-use std::process::Command;
+use std::io::{BufRead, BufReader};
+use std::process::{Command, Stdio};
 use tauri::Emitter;
 
 // Install package
@@ -35,7 +36,7 @@ pub async fn install_package(
                 false,
             );
             use std::io::Write;
-            use std::process::Stdio;
+            use std::thread;
 
             let mut child = Command::new("sudo")
                 .arg("-S")
@@ -49,6 +50,60 @@ pub async fn install_package(
             if let Some(mut stdin) = child.stdin.take() {
                 writeln!(stdin, "{}", password)
                     .map_err(|e| format!("Failed to write password: {}", e))?;
+            }
+
+            // Stream both stdout and stderr in real-time using separate threads
+            let stdout = child.stdout.take();
+            let stderr = child.stderr.take();
+
+            let window_clone = window.clone();
+            let stdout_handle = stdout.map(|stdout| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stdout);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() {
+                                let _ = window_clone.emit(
+                                    "install-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            let window_clone = window.clone();
+            let stderr_handle = stderr.map(|stderr| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stderr);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() && !line.contains("[sudo] password") {
+                                let _ = window_clone.emit(
+                                    "install-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            // Wait for streaming threads to complete
+            if let Some(handle) = stdout_handle {
+                let _ = handle.join();
+            }
+            if let Some(handle) = stderr_handle {
+                let _ = handle.join();
             }
 
             child.wait_with_output()
@@ -69,12 +124,10 @@ pub async fn install_package(
                 return Err("No AUR helper found. Please install yay or paru.".to_string());
             };
             emit_progress(
-                50,
+                40,
                 format!("Using {} to install {}...", helper, package_name),
                 false,
             );
-
-            use std::process::Stdio;
 
             // Create a wrapper script that handles password input for sudo
             // First authenticate sudo, then run AUR helper as regular user
@@ -100,11 +153,70 @@ echo '{}' | sudo -S -v
                 .output()
                 .map_err(|e| format!("Failed to make script executable: {}", e))?;
 
-            // Execute the script
-            let result = Command::new(&script_path)
+            // Execute the script with real-time streaming
+            use std::thread;
+
+            let mut child = Command::new(&script_path)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
-                .output();
+                .spawn()
+                .map_err(|e| format!("Failed to spawn AUR helper: {}", e))?;
+
+            // Stream both stdout and stderr in real-time
+            let stdout = child.stdout.take();
+            let stderr = child.stderr.take();
+
+            let window_clone = window.clone();
+            let stdout_handle = stdout.map(|stdout| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stdout);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() {
+                                let _ = window_clone.emit(
+                                    "install-progress",
+                                    InstallProgress {
+                                        percentage: 60,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            let window_clone = window.clone();
+            let stderr_handle = stderr.map(|stderr| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stderr);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() && !line.contains("[sudo] password") {
+                                let _ = window_clone.emit(
+                                    "install-progress",
+                                    InstallProgress {
+                                        percentage: 60,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            // Wait for streaming threads to complete
+            if let Some(handle) = stdout_handle {
+                let _ = handle.join();
+            }
+            if let Some(handle) = stderr_handle {
+                let _ = handle.join();
+            }
+
+            let result = child.wait_with_output();
 
             // Clean up script
             let _ = std::fs::remove_file(&script_path);
@@ -113,9 +225,70 @@ echo '{}' | sudo -S -v
         }
         "flatpak" => {
             emit_progress(30, "Installing from Flatpak...".to_string(), false);
-            Command::new("flatpak")
+            use std::thread;
+
+            let mut child = Command::new("flatpak")
                 .args(&["install", "-y", &package_name])
-                .output()
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()
+                .map_err(|e| format!("Failed to spawn flatpak: {}", e))?;
+
+            // Stream both stdout and stderr in real-time
+            let stdout = child.stdout.take();
+            let stderr = child.stderr.take();
+
+            let window_clone = window.clone();
+            let stdout_handle = stdout.map(|stdout| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stdout);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() {
+                                let _ = window_clone.emit(
+                                    "install-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            let window_clone = window.clone();
+            let stderr_handle = stderr.map(|stderr| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stderr);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() {
+                                let _ = window_clone.emit(
+                                    "install-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            // Wait for streaming threads to complete
+            if let Some(handle) = stdout_handle {
+                let _ = handle.join();
+            }
+            if let Some(handle) = stderr_handle {
+                let _ = handle.join();
+            }
+
+            child.wait_with_output()
         }
         _ => return Err("Unknown package source".to_string()),
     };
@@ -186,6 +359,7 @@ pub async fn remove_package(
             );
             use std::io::Write;
             use std::process::Stdio;
+            use std::thread;
 
             let args = if remove_mode == "recursive" {
                 vec!["pacman", "-Rns", "--noconfirm", &package_name]
@@ -207,12 +381,67 @@ pub async fn remove_package(
                     .map_err(|e| format!("Failed to write password: {}", e))?;
             }
 
+            // Stream both stdout and stderr in real-time
+            let stdout = child.stdout.take();
+            let stderr = child.stderr.take();
+
+            let window_clone = window.clone();
+            let stdout_handle = stdout.map(|stdout| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stdout);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() {
+                                let _ = window_clone.emit(
+                                    "remove-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            let window_clone = window.clone();
+            let stderr_handle = stderr.map(|stderr| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stderr);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() && !line.contains("[sudo] password") {
+                                let _ = window_clone.emit(
+                                    "remove-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            // Wait for streaming threads to complete
+            if let Some(handle) = stdout_handle {
+                let _ = handle.join();
+            }
+            if let Some(handle) = stderr_handle {
+                let _ = handle.join();
+            }
+
             child.wait_with_output()
         }
         "aur" => {
             emit_progress(30, "Removing AUR package...".to_string(), false);
             use std::io::Write;
             use std::process::Stdio;
+            use std::thread;
 
             // AUR packages are removed using pacman with sudo for permissions
             let args = if remove_mode == "recursive" {
@@ -235,13 +464,128 @@ pub async fn remove_package(
                     .map_err(|e| format!("Failed to write password: {}", e))?;
             }
 
+            // Stream both stdout and stderr in real-time
+            let stdout = child.stdout.take();
+            let stderr = child.stderr.take();
+
+            let window_clone = window.clone();
+            let stdout_handle = stdout.map(|stdout| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stdout);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() {
+                                let _ = window_clone.emit(
+                                    "remove-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            let window_clone = window.clone();
+            let stderr_handle = stderr.map(|stderr| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stderr);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() && !line.contains("[sudo] password") {
+                                let _ = window_clone.emit(
+                                    "remove-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            // Wait for streaming threads to complete
+            if let Some(handle) = stdout_handle {
+                let _ = handle.join();
+            }
+            if let Some(handle) = stderr_handle {
+                let _ = handle.join();
+            }
+
             child.wait_with_output()
         }
         "flatpak" => {
             emit_progress(30, "Removing Flatpak package...".to_string(), false);
-            Command::new("flatpak")
+            use std::thread;
+
+            let mut child = Command::new("flatpak")
                 .args(&["uninstall", "-y", &package_name])
-                .output()
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()
+                .map_err(|e| format!("Failed to spawn flatpak: {}", e))?;
+
+            // Stream both stdout and stderr in real-time
+            let stdout = child.stdout.take();
+            let stderr = child.stderr.take();
+
+            let window_clone = window.clone();
+            let stdout_handle = stdout.map(|stdout| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stdout);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() {
+                                let _ = window_clone.emit(
+                                    "remove-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            let window_clone = window.clone();
+            let stderr_handle = stderr.map(|stderr| {
+                thread::spawn(move || {
+                    let reader = BufReader::new(stderr);
+                    for line in reader.lines() {
+                        if let Ok(line) = line {
+                            if !line.trim().is_empty() {
+                                let _ = window_clone.emit(
+                                    "remove-progress",
+                                    InstallProgress {
+                                        percentage: 50,
+                                        message: line,
+                                        completed: false,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                })
+            });
+
+            // Wait for streaming threads to complete
+            if let Some(handle) = stdout_handle {
+                let _ = handle.join();
+            }
+            if let Some(handle) = stderr_handle {
+                let _ = handle.join();
+            }
+
+            child.wait_with_output()
         }
         _ => return Err("Unknown package source".to_string()),
     };

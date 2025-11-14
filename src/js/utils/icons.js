@@ -2,7 +2,10 @@
  * Icon mapping for applications
  * Returns icon URLs for known applications, with fallback placeholder
  */
-export function getAppIcon(appName) {
+import { getCachedIcon } from "./iconCache.js";
+
+// Icon URL mapping
+export function getAppIconUrl(appName) {
   const iconMap = {
     firefox:
       "https://upload.wikimedia.org/wikipedia/commons/a/a0/Firefox_logo%2C_2019.svg",
@@ -60,4 +63,22 @@ export function getAppIcon(appName) {
     iconMap[appName.toLowerCase()] ||
     "https://via.placeholder.com/64?text=" + appName[0].toUpperCase()
   );
+}
+
+// Get cached app icon with fallback
+export async function getAppIcon(appName) {
+  const iconUrl = getAppIconUrl(appName);
+
+  try {
+    const cachedUrl = await getCachedIcon(appName, iconUrl);
+    return cachedUrl || iconUrl;
+  } catch (err) {
+    console.warn(`[Icons] Failed to get cached icon for ${appName}:`, err);
+    return iconUrl;
+  }
+}
+
+// Synchronous version for immediate rendering (returns URL, not cached data)
+export function getAppIconSync(appName) {
+  return getAppIconUrl(appName);
 }
